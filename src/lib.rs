@@ -52,14 +52,15 @@ where
         count
     }
 
-    pub fn print(&self) {
+    pub fn print(&self, prefix: &str) {
         let mut current_node = self.head.as_ref();
+
+        print!("{}\n", prefix);
         while let Some(node) = current_node {
             print!("{} ", node.data);
             current_node = node.next.as_deref();
         }
-
-        println!();
+        println!("\n");
     }
 
     pub fn push(&mut self, element: T) {
@@ -69,54 +70,15 @@ where
         };
     }
 
-    pub fn pop(&mut self) {
-        match self.head {
-            None => panic!("can't pop out of nothing!"),
-            Some(ref mut head) => head.pop(),
-        };
-    }
-
     fn get_nth_node_mut(&mut self, n: usize) -> Option<&mut Node<T>> {
         let mut nth_node = self.head.as_mut();
         for _ in 0..n {
             nth_node = match nth_node {
                 None => return None,
-                Some(node) => node.next.as_mut().map(|node| &mut **node),
+                Some(node) => node.next.as_deref_mut(),
             }
         }
         nth_node
-    }
-
-    fn add_at_beginning(&mut self, element: T) {
-        let mut new_node = Node::new(element);
-
-        match self.head {
-            None => self.head = Some(new_node),
-            Some(_) => {
-                let current_head = self.head.take().unwrap();
-                new_node.next = Some(Box::new(current_head));
-                self.head = Some(new_node);
-            }
-        }
-    }
-
-    pub fn add_at_index(&mut self, element: T, index: usize) {
-        if index == 0 {
-            return self.add_at_beginning(element);
-        }
-
-        let length = self.len();
-        if index >= length {
-            panic!("index out of bounds");
-        }
-
-        let mut prev_to_index_node = self.get_nth_node_mut(index - 1).unwrap();
-        let chain_node = mem::replace(&mut prev_to_index_node.next, None);
-
-        let mut new_node = Box::new(Node::new(element));
-        new_node.next = chain_node;
-
-        prev_to_index_node.next = Some(new_node);
     }
 
     fn remove_at_beginning(&mut self) {
@@ -159,17 +121,5 @@ impl<T> Node<T> {
         }
 
         self.next = Some(Box::new(Node::new(element)));
-    }
-
-    fn pop(&mut self) {
-        match self.next {
-            None => {}
-            Some(ref mut next_node) => match next_node.next {
-                None => {}
-                Some(_) => return next_node.pop(),
-            },
-        }
-
-        self.next = None;
     }
 }
