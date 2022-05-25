@@ -115,8 +115,8 @@ where
         let mut prev_to_target_node = self.get_nth_node_mut(index - 1).unwrap();
 
         prev_to_target_node.next = match prev_to_target_node.next {
-            Some(ref mut target) => mem::replace(&mut target.next, None),
             None => panic!("out of range"),
+            Some(ref mut target) => mem::replace(&mut target.next, None),
         };
     }
 }
