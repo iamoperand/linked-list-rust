@@ -9,6 +9,29 @@ pub struct Node<T> {
     data: T,
 }
 
+pub struct Iter<'a, T> {
+    next: Option<&'a Node<T>>,
+}
+
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_deref();
+            &node.data
+        })
+    }
+}
+
+impl<T> List<T> {
+    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
+        Iter {
+            next: self.head.as_ref(),
+        }
+    }
+}
+
 impl<T> List<T>
 where
     T: Display,
@@ -23,7 +46,7 @@ where
         let mut current_node = self.head.as_ref();
         while let Some(node) = current_node {
             count += 1;
-            current_node = node.next.as_ref().map(|next_node| &**next_node);
+            current_node = node.next.as_deref();
         }
 
         count
@@ -33,7 +56,7 @@ where
         let mut current_node = self.head.as_ref();
         while let Some(node) = current_node {
             print!("{} ", node.data);
-            current_node = node.next.as_ref().map(|next_node| &**next_node);
+            current_node = node.next.as_deref();
         }
 
         println!();

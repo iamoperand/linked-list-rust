@@ -38,4 +38,10 @@ fn main() {
     println!("\n**** removed 2nd node ****");
 
     list.print();
+
+
+    // print the command to transfer a token
+    for token_value in list.iter() {
+        println!("\n solana transfer --from <KEYPAIR> test_wallet {} --allow-unfunded-recipient --url https://api.devnet.solana.com --fee-payer <KEYPAIR>", token_value);
+    }
 }
